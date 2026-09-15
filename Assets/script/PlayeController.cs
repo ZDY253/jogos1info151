@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlatformController : MonoBehaviour
@@ -18,23 +19,22 @@ public class PlatformController : MonoBehaviour
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
     
-    // Input Actions - using your PlayerActionMap asset
+    [Header("coin setting")]
+    private int coinCounter = 0;
+    [SerializeField] private TextMeshProUGUI coinText;
     private PlayerActionMap inputActions;
     private InputAction moveAction;
     private InputAction jumpAction;
     
-    // Movement state
     private Vector2 moveInput;
     private bool isJumping;
     private bool isGrounded;
     
     private void Awake()
     {
-        // Get or add Rigidbody2D
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
         
-        // Initialize input actions using YOUR PlayerActionMap asset
         inputActions = new PlayerActionMap();
         
         moveAction = inputActions.player.move;
@@ -43,11 +43,9 @@ public class PlatformController : MonoBehaviour
     
     private void OnEnable()
     {
-        // Enable input actions
         moveAction.Enable();
         jumpAction.Enable();
         
-        // Subscribe to input events
         jumpAction.performed += OnJumpPerformed;
         jumpAction.canceled += OnJumpCanceled;
     }
@@ -58,20 +56,16 @@ public class PlatformController : MonoBehaviour
         jumpAction.performed -= OnJumpPerformed;
         jumpAction.canceled -= OnJumpCanceled;
         
-        // Disable input actions
         moveAction.Disable();
         jumpAction.Disable();
     }
     
     private void Update()
     {
-        // Read movement input from YOUR configured Move action
         moveInput = moveAction.ReadValue<Vector2>();
         
-        // Check if grounded
         CheckGrounded();
         
-        // Apply jump physics
         ApplyJumpPhysics();
     }
     
@@ -85,7 +79,6 @@ public class PlatformController : MonoBehaviour
     {
         if (groundCheckPoint != null)
         {
-            // Ground check using circle cast at ground check point
             Collider2D[] colliders = Physics2D.OverlapCircleAll(
                 groundCheckPoint.position, 
                 groundCheckRadius, 
@@ -95,7 +88,6 @@ public class PlatformController : MonoBehaviour
         }
         else
         {
-            // Simple ground check using raycast from center
             RaycastHit2D hit = Physics2D.Raycast(
                 transform.position, 
                 Vector2.down, 
@@ -108,7 +100,6 @@ public class PlatformController : MonoBehaviour
     
     private void MovePlayer()
     {
-        // Apply horizontal movement
         rb.linearVelocity = new Vector2(
             moveInput.x * moveSpeed,
             rb.linearVelocity.y
@@ -117,15 +108,12 @@ public class PlatformController : MonoBehaviour
     
     private void ApplyJumpPhysics()
     {
-        // Better jump physics (variable jump height)
         if (rb.linearVelocity.y < 0)
         {
-            // Falling - increase gravity
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
         else if (rb.linearVelocity.y > 0 && !isJumping)
         {
-            // Jump button released early - reduce jump height
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
     }
@@ -145,7 +133,6 @@ public class PlatformController : MonoBehaviour
         isJumping = false;
     }
     
-    // Visual debug for ground check
     private void OnDrawGizmosSelected()
     {
         if (groundCheckPoint != null)
@@ -157,6 +144,11 @@ public class PlatformController : MonoBehaviour
         {
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(transform.position, Vector2.down * 1.1f);
-        }
+        } 
+    }
+   public void ChangeTextCoin()
+    {
+        coinCounter+=1;
+        coinText.text = "coins: " + coinCounter.ToString();
     }
 }

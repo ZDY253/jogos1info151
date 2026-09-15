@@ -6,6 +6,7 @@ public class coincontroller : MonoBehaviour
    {
     if (other.CompareTag("Player"))
     {
+        other.gameObject.SendMessage("ChangeTextCoin");
         Destroy(gameObject);
     }
    }
