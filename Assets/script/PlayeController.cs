@@ -26,7 +26,13 @@ public class PlatformController : MonoBehaviour
     private PlayerActionMap inputActions;
     private InputAction moveAction;
     private InputAction jumpAction;
-    
+
+    [Header("Animation settings")]
+    [SerializeField] private Animator anim;
+
+
+
+
     private Vector2 moveInput;
     private bool isJumping;
     private bool isGrounded;
@@ -37,10 +43,12 @@ public class PlatformController : MonoBehaviour
             rb = GetComponent<Rigidbody2D>();
         
         inputActions = new PlayerActionMap();
-        
+         anim = GetComponent<Animator>();
+   
         moveAction = inputActions.player.move;
         jumpAction = inputActions.player.jump;
-    }
+     }
+       
     
     private void OnEnable()
     {
@@ -105,6 +113,19 @@ public class PlatformController : MonoBehaviour
             moveInput.x * moveSpeed,
             rb.linearVelocity.y
         );
+
+        anim.SetBool("is Moving", rb.linearVelocity.magnitude > 0.1f);
+        if(rb.linearVelocity.x > 0.1f)
+        {
+            this.GetComponent<SpriteRenderer>().flipX = false;
+        }
+        else if(rb.linearVelocity.x < -0.1f)
+        {
+            this.GetComponent<SpriteRenderer>().flipX = true;
+        }
+
+
+
     }
     
     private void ApplyJumpPhysics()
