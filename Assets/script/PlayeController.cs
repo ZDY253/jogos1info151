@@ -105,8 +105,10 @@ public class PlatformController : MonoBehaviour
             );
             isGrounded = hit.collider != null;
         }
+
+        anim.SetBool("OnGround", isGrounded);
     }
-    
+
     private void MovePlayer()
     {
         rb.linearVelocity = new Vector2(
@@ -114,18 +116,26 @@ public class PlatformController : MonoBehaviour
             rb.linearVelocity.y
         );
 
-        anim.SetBool("is Moving", rb.linearVelocity.magnitude > 0.1f);
-        if(rb.linearVelocity.x > 0.1f)
+        bool isMoving = Mathf.Abs(moveInput.x) > 0.1f;
+        anim.SetBool("is Moving", isMoving);
+
+        SpriteRenderer sprite = GetComponent<SpriteRenderer>();
+
+        if (sprite != null)
         {
-            this.GetComponent<SpriteRenderer>().flipX = false;
+            if (moveInput.x > 0.1f)
+            {
+                sprite.flipX = false;
+            }
+            else if (moveInput.x < -0.1f)
+            {
+                sprite.flipX = true;
+            }
+
+
+
+
         }
-        else if(rb.linearVelocity.x < -0.1f)
-        {
-            this.GetComponent<SpriteRenderer>().flipX = true;
-        }
-
-
-
     }
     
     private void ApplyJumpPhysics()
@@ -170,9 +180,20 @@ public class PlatformController : MonoBehaviour
     }
    public void ChangeTextCoin()
     {
-        coinCounter+=1;
-        coinText.text = "coins: " + coinCounter.ToString();
+    {
+        coinCounter++;
+
+        if (coinText == null)
+        {
+            Debug.LogError(
+                "Coin Text não foi atribuído no Inspector!"
+            );
+            return;
+        }
+
+        coinText.text = "Coins: " + coinCounter;
     }
+}
 
     public void Die(){
          Destroy(gameObject);
