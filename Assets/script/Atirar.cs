@@ -9,8 +9,8 @@ public class Atirar : MonoBehaviour
     void Update()
     {
         {
-            // Verifica se o botão esquerdo do mouse ou a barra de espaço foi pressionada
-            if (UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame)
+            // Verifica se o botão direito do mouse ou a barra de espaço foi pressionada
+            if (UnityEngine.InputSystem.Mouse.current.rightButton.wasPressedThisFrame)
             {
                 Disparar();
             }
