@@ -1,13 +1,26 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Projetil : MonoBehaviour
 {
     public float velocidade = 12f;
     private Rigidbody2D rb;
+    public float initialVelocity;
+    private bool lookingRight;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        if (lookingRight)
+        {
+            rb.linearVelocity= Vector2.right * initialVelocity;
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.left * initialVelocity;
+        }
+
+
     }
 
     void Start()

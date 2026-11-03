@@ -203,7 +203,6 @@ public class PlatformController : MonoBehaviour
 
     public void ReloadCurrentScene()
     {
-        string currentSceneName = SceneManager.GetActiveScene().name;
-       SceneManager.LoadSceneAsync(currentSceneName);
+       SceneManager.LoadSceneAsync("menu");
     }
 }
