@@ -1,25 +1,49 @@
+
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Atirar : MonoBehaviour
 {
-    public GameObject prefabProjetil;
-    public Transform pontoDisparo;
-    
-    // Update is called once per frame
-    void Update()
-    {
-        {
-            // Verifica se o botão direito do mouse ou a barra de espaço foi pressionada
-            if (UnityEngine.InputSystem.Mouse.current.rightButton.wasPressedThisFrame)
-            {
-                Disparar();
-            }
-        
+    private PlatformController player;
+    private PlayerActionMap inputActions;
+    private InputAction shootAction;
 
-    }
-}
-    void Disparar()
+    private void Awake()
     {
-        Instantiate(prefabProjetil, pontoDisparo.position, pontoDisparo.rotation);
+        player = GetComponentInParent<PlatformController>();
+
+        inputActions = new PlayerActionMap();
+        shootAction = inputActions.player.Shoot;
+
+        if (player == null)
+        {
+            Debug.LogError("PlatformController não encontrado!");
+        }
+        else
+        {
+            Debug.Log("Jogador encontrado: " + player.gameObject.name);
+        }
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+        shootAction.performed += Disparar;
+    }
+
+    private void OnDisable()
+    {
+        shootAction.performed -= Disparar;
+        inputActions.Disable();
+    }
+
+    private void Disparar(InputAction.CallbackContext context)
+    {
+        Debug.Log("Tecla de tiro pressionada!");
+
+        if (player != null)
+        {
+            player.Atirar();
+        }
     }
 }

@@ -1,2 +1,17 @@
 fileFormatVersion: 2
 guid: dea130a09a79cee4e8b25201d01442f7
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - projetilPrefab: {fileID: 4004885639279068420, guid: 796f4fff315d32745b9023acdf857343, type: 3}
+  - pontoDeDisparo: {instanceID: 0}
+  - groundCheckPoint: {instanceID: 0}
+  - rb: {instanceID: 0}
+  - coinText: {instanceID: 0}
+  - anim: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

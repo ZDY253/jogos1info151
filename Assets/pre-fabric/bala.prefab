@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projetil
   velocidade: 12
-  initialVelocity: 50
+  initialVelocity: 0
 --- !u!95 &8193798426733487505
 Animator:
   serializedVersion: 7

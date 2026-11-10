@@ -6,20 +6,26 @@ using TMPro;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlatformController : MonoBehaviour
 {
+
+    [Header("Shooting Settings")]
+    [SerializeField] private GameObject projetilPrefab;
+    [SerializeField] private Transform pontoDeDisparo;
+
+
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 8f;
     [SerializeField] private float jumpForce = 12f;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private float fallMultiplier = 2.5f;
     [SerializeField] private float lowJumpMultiplier = 2f;
-    
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheckPoint;
     [SerializeField] private LayerMask groundLayer;
-    
+
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
-    
+
     [Header("coin setting")]
     private int coinCounter = 0;
     [SerializeField] private TextMeshProUGUI coinText;
@@ -31,66 +37,67 @@ public class PlatformController : MonoBehaviour
     [SerializeField] private Animator anim;
 
 
+    private bool olhandoDireita = true;
 
-
+    public bool OlhandoDireita => olhandoDireita;
     private Vector2 moveInput;
     private bool isJumping;
     private bool isGrounded;
-    
+
     private void Awake()
     {
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
-        
+
         inputActions = new PlayerActionMap();
-         anim = GetComponent<Animator>();
-   
+        anim = GetComponent<Animator>();
+
         moveAction = inputActions.player.move;
         jumpAction = inputActions.player.jump;
-     }
-       
-    
+    }
+
+
     private void OnEnable()
     {
         moveAction.Enable();
         jumpAction.Enable();
-        
+
         jumpAction.performed += OnJumpPerformed;
         jumpAction.canceled += OnJumpCanceled;
     }
-    
+
     private void OnDisable()
     {
         // Unsubscribe from input events
         jumpAction.performed -= OnJumpPerformed;
         jumpAction.canceled -= OnJumpCanceled;
-        
+
         moveAction.Disable();
         jumpAction.Disable();
     }
-    
+
     private void Update()
     {
         moveInput = moveAction.ReadValue<Vector2>();
-        
+
         CheckGrounded();
-        
+
         ApplyJumpPhysics();
     }
-    
+
     private void FixedUpdate()
     {
         // Apply movement
         MovePlayer();
     }
-    
+
     private void CheckGrounded()
     {
         if (groundCheckPoint != null)
         {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(
-                groundCheckPoint.position, 
-                groundCheckRadius, 
+                groundCheckPoint.position,
+                groundCheckRadius,
                 groundLayer
             );
             isGrounded = colliders.Length > 0;
@@ -98,8 +105,8 @@ public class PlatformController : MonoBehaviour
         else
         {
             RaycastHit2D hit = Physics2D.Raycast(
-                transform.position, 
-                Vector2.down, 
+                transform.position,
+                Vector2.down,
                 1.1f,
                 groundLayer
             );
@@ -126,10 +133,12 @@ public class PlatformController : MonoBehaviour
             if (moveInput.x > 0.1f)
             {
                 sprite.flipX = false;
+                olhandoDireita = true;
             }
             else if (moveInput.x < -0.1f)
             {
                 sprite.flipX = true;
+                olhandoDireita = false;
             }
 
 
@@ -137,7 +146,7 @@ public class PlatformController : MonoBehaviour
 
         }
     }
-    
+
     private void ApplyJumpPhysics()
     {
         if (rb.linearVelocity.y < 0)
@@ -149,7 +158,7 @@ public class PlatformController : MonoBehaviour
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.deltaTime;
         }
     }
-    
+
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
         if (isGrounded)
@@ -159,12 +168,12 @@ public class PlatformController : MonoBehaviour
             isJumping = true;
         }
     }
-    
+
     private void OnJumpCanceled(InputAction.CallbackContext context)
     {
         isJumping = false;
     }
-    
+
     private void OnDrawGizmosSelected()
     {
         if (groundCheckPoint != null)
@@ -176,33 +185,58 @@ public class PlatformController : MonoBehaviour
         {
             Gizmos.color = isGrounded ? Color.green : Color.red;
             Gizmos.DrawRay(transform.position, Vector2.down * 1.1f);
-        } 
-    }
-   public void ChangeTextCoin()
-    {
-    {
-        coinCounter++;
-
-        if (coinText == null)
-        {
-            Debug.LogError(
-                "Coin Text não foi atribuído no Inspector!"
-            );
-            return;
         }
-
-        coinText.text = "Coins: " + coinCounter;
     }
-}
+    public void ChangeTextCoin()
+    {
+        {
+            coinCounter++;
 
-    public void Die(){
-         Destroy(gameObject);
-         ReloadCurrentScene();
+            if (coinText == null)
+            {
+                Debug.LogError(
+                    "Coin Text não foi atribuído no Inspector!"
+                );
+                return;
+            }
+
+            coinText.text = "Coins: " + coinCounter;
+        }
+    }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+        ReloadCurrentScene();
 
     }
 
     public void ReloadCurrentScene()
     {
-       SceneManager.LoadSceneAsync("menu");
+        SceneManager.LoadSceneAsync("menu");
+    }
+
+
+    public void Atirar()
+    {
+        if (projetilPrefab == null || pontoDeDisparo == null)
+        {
+            Debug.LogError("Prefab ou ponto de disparo não configurado!");
+            return;
+        }
+
+        GameObject tiro = Instantiate(
+            projetilPrefab,
+            pontoDeDisparo.position,
+            Quaternion.identity
+        );
+
+        Projetil scriptTiro = tiro.GetComponent<Projetil>();
+
+        if (scriptTiro != null)
+        {
+            scriptTiro.DefinirDirecao(olhandoDireita);
+        }
     }
 }
+

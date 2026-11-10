@@ -1,56 +1,37 @@
+
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Projetil : MonoBehaviour
 {
-    public float velocidade = 12f;
-    private Rigidbody2D rb;
-    public float initialVelocity;
-    private bool lookingRight;
+    [SerializeField] private float velocidade = 10f;
 
-    void Awake()
+    private Rigidbody2D rb;
+    private SpriteRenderer sprite;
+    private bool olhandoDireita = true;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        if (lookingRight)
-        {
-            rb.linearVelocity= Vector2.right * initialVelocity;
-        }
-        else
-        {
-            rb.linearVelocity = Vector2.left * initialVelocity;
-        }
-
-
+        sprite = GetComponent<SpriteRenderer>();
     }
 
-    void Start()
+    public void DefinirDirecao(bool direita)
     {
-        if (rb != null)
+        olhandoDireita = direita;
+
+        if (sprite != null)
         {
-            rb.linearVelocity = transform.right * velocidade;
+            sprite.flipX = !direita;
         }
-        Destroy(gameObject, 3f); // Destrói a bala após 3 segundos
     }
 
-    // 1. Testa colisão se a bala encostar em um colisor sólido
-    private void OnCollisionEnter2D(Collision2D colisao)
+    private void Start()
     {
-        VerificarImpacto(colisao.gameObject);
-    }
+        rb.linearVelocity = new Vector2(
+            (olhandoDireita ? 1f : -1f) * velocidade,
+            0f
+        );
 
-    // 2. Testa colisão se a bala passar por dentro de um Trigger
-    private void OnTriggerEnter2D(Collider2D colisao)
-    {
-        VerificarImpacto(colisao.gameObject);
-    }
-
-    // Função única que lida com a destruição
-    void VerificarImpacto(GameObject objetoAtingido)
-    {
-        if (objetoAtingido.CompareTag("Enemy"))
-        {
-            Destroy(objetoAtingido); // Destrói o inimigo
-            Destroy(gameObject);      // Destrói a bala
-        }
+        Destroy(gameObject, 3f);
     }
 }
