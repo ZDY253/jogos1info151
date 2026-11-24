@@ -1,6 +1,8 @@
-
 using UnityEngine;
 
+/// <summary>
+/// Projetil do jogador. Destroi inimigos e desaparece ao encostar no cenario.
+/// </summary>
 public class Projetil : MonoBehaviour
 {
     [SerializeField] private float velocidade = 10f;
@@ -33,5 +35,20 @@ public class Projetil : MonoBehaviour
         );
 
         Destroy(gameObject, 3f);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+            return;
+
+        if (other.CompareTag("Enemy"))
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+            return;
+        }
+
+        Destroy(gameObject);
     }
 }

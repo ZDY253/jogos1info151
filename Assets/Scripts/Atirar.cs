@@ -19,10 +19,6 @@ public class Atirar : MonoBehaviour
         {
             Debug.LogError("PlatformController não encontrado!");
         }
-        else
-        {
-            Debug.Log("Jogador encontrado: " + player.gameObject.name);
-        }
     }
 
     private void OnEnable()
@@ -39,8 +35,6 @@ public class Atirar : MonoBehaviour
 
     private void Disparar(InputAction.CallbackContext context)
     {
-        Debug.Log("Tecla de tiro pressionada!");
-
         if (player != null)
         {
             player.Atirar();

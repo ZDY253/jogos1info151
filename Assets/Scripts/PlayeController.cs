@@ -27,7 +27,6 @@ public class PlatformController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
 
     [Header("coin setting")]
-    private int coinCounter = 0;
     [SerializeField] private TextMeshProUGUI coinText;
     private PlayerActionMap inputActions;
     private InputAction moveAction;
@@ -43,6 +42,7 @@ public class PlatformController : MonoBehaviour
     private Vector2 moveInput;
     private bool isJumping;
     private bool isGrounded;
+    private bool controlEnabled = true;
 
     private void Awake()
     {
@@ -50,10 +50,40 @@ public class PlatformController : MonoBehaviour
             rb = GetComponent<Rigidbody2D>();
 
         inputActions = new PlayerActionMap();
-        anim = GetComponent<Animator>();
+
+        if (anim == null)
+            anim = GetComponent<Animator>();
 
         moveAction = inputActions.player.move;
         jumpAction = inputActions.player.jump;
+    }
+
+    /// <summary>Usado pelo PlayerHealth para congelar o personagem ao morrer.</summary>
+    public void SetControlEnabled(bool value)
+    {
+        controlEnabled = value;
+
+        if (value)
+        {
+            moveAction.Enable();
+            jumpAction.Enable();
+        }
+        else
+        {
+            moveInput = Vector2.zero;
+            isJumping = false;
+            moveAction.Disable();
+            jumpAction.Disable();
+
+            if (rb != null)
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+
+            if (anim != null)
+            {
+                anim.SetBool("is Moving", false);
+                anim.SetBool("OnGround", false);
+            }
+        }
     }
 
 
@@ -78,6 +108,9 @@ public class PlatformController : MonoBehaviour
 
     private void Update()
     {
+        if (!controlEnabled)
+            return;
+
         moveInput = moveAction.ReadValue<Vector2>();
 
         CheckGrounded();
@@ -87,6 +120,9 @@ public class PlatformController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!controlEnabled)
+            return;
+
         // Apply movement
         MovePlayer();
     }
@@ -124,7 +160,9 @@ public class PlatformController : MonoBehaviour
         );
 
         bool isMoving = Mathf.Abs(moveInput.x) > 0.1f;
-        anim.SetBool("is Moving", isMoving);
+
+        if (anim != null)
+            anim.SetBool("is Moving", isMoving);
 
         SpriteRenderer sprite = GetComponent<SpriteRenderer>();
 
@@ -189,31 +227,30 @@ public class PlatformController : MonoBehaviour
     }
     public void ChangeTextCoin()
     {
-        {
-            coinCounter++;
+        if (coinText == null || GameManager.Instance == null)
+            return;
 
-            if (coinText == null)
-            {
-                Debug.LogError(
-                    "Coin Text não foi atribuído no Inspector!"
-                );
-                return;
-            }
-
-            coinText.text = "Coins: " + coinCounter;
-        }
+        coinText.text = "Moedas: " + GameManager.Instance.LevelCoins;
     }
 
     public void Die()
     {
-        Destroy(gameObject);
+        if (GetComponent<PlayerHealth>() != null)
+        {
+            GetComponent<PlayerHealth>().Kill("Perigo");
+            return;
+        }
+
         ReloadCurrentScene();
 
     }
 
     public void ReloadCurrentScene()
     {
-        SceneManager.LoadSceneAsync("menu");
+        if (GameManager.Instance != null)
+            GameManager.Instance.RestartLevel();
+        else
+            SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
     }
 
 
