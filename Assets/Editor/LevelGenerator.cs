@@ -89,15 +89,21 @@ public static class LevelGenerator
         {
             AssetDatabase.Refresh();
 
-            // A cena level 1 e aberta para extrair o prefab do jogador.
-            // Depois ela e regerada junto com as outras.
-            GameObject playerPrefab = CreatePlayerPrefab();
+            // Reaproveita o prefab do jogador que ja esta no projeto
+            // (assim o ponto de disparo, a velocidade e a vida nao sao perdidos).
+            GameObject playerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+
+            if (playerPrefab == null)
+                playerPrefab = CreatePlayerPrefab();
 
             Sprite white = GetWhiteSprite();
             Material litMaterial = GetLitSpriteMaterial();
             GameObject projectilePrefab = CreateEnemyProjectilePrefab(white, litMaterial);
 
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+            Scene activeScene = EditorSceneManager.GetActiveScene();
+
+            if (!string.IsNullOrEmpty(activeScene.path))
+                EditorSceneManager.SaveScene(activeScene);
 
             LevelSpec[] specs = BuildSpecs();
 
@@ -128,6 +134,8 @@ public static class LevelGenerator
     {
         List<LevelSpec> specs = new List<LevelSpec>();
 
+        // Todas as plataformas ficam na mesma altura (centro y = -2, topo y = -1.5)
+        // e os vaos entre elas ficam entre 3.5 e 5 unidades.
         // ---------------------------------------------------------------- FASE 1
         specs.Add(new LevelSpec
         {
@@ -136,37 +144,37 @@ public static class LevelGenerator
             next = "level2",
             timeLimit = 0f,
             spawn = new Vector2(-14f, -0.1f),
-            goalX = 70f,
+            goalX = 73f,
             platforms = new[]
             {
                 new Plat(-8f, -2f, 16f, 1f),
-                new Plat(7.75f, -2f, 9f, 1f),
-                new Plat(20.25f, -2f, 9f, 1f),
-                new Plat(32.75f, -2f, 9f, 1f),
-                new Plat(45.25f, -2f, 9f, 1f),
-                new Plat(57.75f, -2f, 9f, 1f),
-                new Plat(68f, -2f, 10f, 1f)
+                new Plat(8f, -2f, 8f, 1f),
+                new Plat(20f, -2f, 8f, 1f),
+                new Plat(32f, -2f, 8f, 1f),
+                new Plat(44f, -2f, 8f, 1f),
+                new Plat(56f, -2f, 8f, 1f),
+                new Plat(69f, -2f, 10f, 1f)
             },
             spikes = new[]
             {
                 new Vector2(-4f, -1.25f),
-                new Vector2(10f, -1.25f),
-                new Vector2(23f, -1.25f),
-                new Vector2(36f, -1.25f),
-                new Vector2(49f, -1.25f),
-                new Vector2(61f, -1.25f)
+                new Vector2(8f, -1.25f),
+                new Vector2(20f, -1.25f),
+                new Vector2(32f, -1.25f),
+                new Vector2(44f, -1.25f),
+                new Vector2(56f, -1.25f)
             },
             coins = new[]
             {
                 new Vector2(-14f, -1f),
                 new Vector2(-10f, -1f),
                 new Vector2(-6f, -1f),
-                new Vector2(-2f, -1f),
+                new Vector2(-1f, -1f),
                 new Vector2(5f, -1f),
-                new Vector2(18f, -1f),
-                new Vector2(31f, -1f),
-                new Vector2(44f, -1f),
-                new Vector2(56f, -1f),
+                new Vector2(17f, -1f),
+                new Vector2(29f, -1f),
+                new Vector2(41f, -1f),
+                new Vector2(53f, -1f),
                 new Vector2(66f, -1f)
             },
             enemies = new EnemySpot[0],
@@ -181,40 +189,40 @@ public static class LevelGenerator
             next = "level 3",
             timeLimit = 0f,
             spawn = new Vector2(-14f, -0.1f),
-            goalX = 67f,
+            goalX = 75f,
             platforms = new[]
             {
-                new Plat(-10f, -2f, 12f, 1f),
-                new Plat(0f, -2f, 5f, 1f),
-                new Plat(6f, -2.5f, 4f, 1f),
-                new Plat(13f, -2f, 5f, 1f),
-                new Plat(21f, -3f, 5f, 1f),
-                new Plat(29f, -2.5f, 4f, 1f),
-                new Plat(37f, -2f, 6f, 1f),
-                new Plat(46f, -3f, 5f, 1f),
-                new Plat(55f, -2f, 5f, 1f),
-                new Plat(64f, -2f, 10f, 1f)
+                new Plat(-8f, -2f, 16f, 1f),
+                new Plat(7f, -2f, 7f, 1f),
+                new Plat(18f, -2f, 7f, 1f),
+                new Plat(29.5f, -2f, 7f, 1f),
+                new Plat(41f, -2f, 8f, 1f),
+                new Plat(53f, -2f, 8f, 1f),
+                new Plat(64.5f, -2f, 7f, 1f),
+                new Plat(75f, -2f, 6f, 1f)
             },
             spikes = new[]
             {
                 new Vector2(-4f, -1.25f),
-                new Vector2(7f, -1.75f),
-                new Vector2(31f, -1.75f),
-                new Vector2(56f, -1.25f),
-                new Vector2(62f, -1.25f)
+                new Vector2(7f, -1.25f),
+                new Vector2(18f, -1.25f),
+                new Vector2(29.5f, -1.25f),
+                new Vector2(41f, -1.25f),
+                new Vector2(53f, -1.25f),
+                new Vector2(64.5f, -1.25f)
             },
             coins = new[]
             {
-                new Vector2(-13f, -1f),
+                new Vector2(-14f, -1f),
                 new Vector2(-9f, -1f),
-                new Vector2(-5f, -1f),
-                new Vector2(0f, -1f),
-                new Vector2(6f, -1.5f),
-                new Vector2(13f, -1f),
-                new Vector2(21f, -2f),
-                new Vector2(29f, -1.5f),
-                new Vector2(37f, -1f),
-                new Vector2(64f, -1f)
+                new Vector2(-4f, -1f),
+                new Vector2(5f, -1f),
+                new Vector2(19.5f, -1f),
+                new Vector2(31f, -1f),
+                new Vector2(42.5f, -1f),
+                new Vector2(54.5f, -1f),
+                new Vector2(66f, -1f),
+                new Vector2(70f, -1f)
             },
             enemies = new EnemySpot[0],
             shooters = new Vector2[0]
@@ -228,43 +236,43 @@ public static class LevelGenerator
             next = "level 4",
             timeLimit = 0f,
             spawn = new Vector2(-14f, -0.1f),
-            goalX = 66.5f,
+            goalX = 76f,
             platforms = new[]
             {
                 new Plat(-8f, -2f, 16f, 1f),
-                new Plat(6f, -2f, 12f, 1f),
-                new Plat(20f, -2f, 12f, 1f),
-                new Plat(34f, -2f, 14f, 1f),
-                new Plat(49f, -2f, 12f, 1f),
-                new Plat(63f, -2f, 10f, 1f)
+                new Plat(8f, -2f, 8f, 1f),
+                new Plat(20.5f, -2f, 9f, 1f),
+                new Plat(33.5f, -2f, 8f, 1f),
+                new Plat(46f, -2f, 9f, 1f),
+                new Plat(58.5f, -2f, 8f, 1f),
+                new Plat(73f, -2f, 12f, 1f)
             },
             spikes = new[]
             {
-                new Vector2(10f, -1.25f),
-                new Vector2(18f, -1.25f),
-                new Vector2(30f, -1.25f),
-                new Vector2(45f, -1.25f),
-                new Vector2(52f, -1.25f),
-                new Vector2(57f, -1.25f)
+                new Vector2(-4f, -1.25f),
+                new Vector2(31f, -1.25f),
+                new Vector2(43.5f, -1.25f),
+                new Vector2(48f, -1.25f),
+                new Vector2(69.5f, -1.25f)
             },
             coins = new[]
             {
-                new Vector2(-13f, -1f),
-                new Vector2(-8f, -1f),
-                new Vector2(-3f, -1f),
-                new Vector2(5f, -1f),
-                new Vector2(14f, -1f),
-                new Vector2(24f, -1f),
-                new Vector2(36f, -1f),
-                new Vector2(47f, -1f),
+                new Vector2(-14f, -1f),
+                new Vector2(-9f, -1f),
+                new Vector2(-4f, -1f),
+                new Vector2(10f, -1f),
+                new Vector2(22.5f, -1f),
+                new Vector2(35f, -1f),
+                new Vector2(49f, -1f),
                 new Vector2(60f, -1f),
-                new Vector2(65f, -1f)
+                new Vector2(70f, -1f),
+                new Vector2(78f, -1f)
             },
             enemies = new[]
             {
-                new EnemySpot(4f, -0.5f, 1f, 9f),
-                new EnemySpot(34f, -0.5f, 29f, 39f),
-                new EnemySpot(60f, -0.5f, 59f, 66f)
+                new EnemySpot(8f, -0.5f, 5f, 11f),
+                new EnemySpot(20.5f, -0.5f, 17f, 24f),
+                new EnemySpot(58.5f, -0.5f, 55.5f, 61.5f)
             },
             shooters = new Vector2[0]
         });
@@ -276,43 +284,43 @@ public static class LevelGenerator
             title = "Fase 4: Soul Society",
             next = "level 5",
             timeLimit = 0f,
-            spawn = new Vector2(-15f, -0.1f),
-            goalX = 67f,
+            spawn = new Vector2(-14f, -0.1f),
+            goalX = 78f,
             platforms = new[]
             {
                 new Plat(-8f, -2f, 18f, 1f),
-                new Plat(8f, -2f, 12f, 1f),
-                new Plat(22f, -2f, 12f, 1f),
-                new Plat(36f, -2f, 14f, 1f),
-                new Plat(51f, -2f, 12f, 1f),
-                new Plat(64f, -2f, 10f, 1f)
+                new Plat(9f, -2f, 8f, 1f),
+                new Plat(21f, -2f, 8f, 1f),
+                new Plat(34f, -2f, 9f, 1f),
+                new Plat(46.5f, -2f, 8f, 1f),
+                new Plat(59f, -2f, 9f, 1f),
+                new Plat(73.5f, -2f, 12f, 1f)
             },
             spikes = new[]
             {
-                new Vector2(5f, -1.25f),
-                new Vector2(20f, -1.25f),
-                new Vector2(31f, -1.25f),
-                new Vector2(48f, -1.25f),
-                new Vector2(60f, -1.25f)
+                new Vector2(-6f, -1.25f),
+                new Vector2(21f, -1.25f),
+                new Vector2(34f, -1.25f),
+                new Vector2(59f, -1.25f)
             },
             coins = new[]
             {
                 new Vector2(-14f, -1f),
-                new Vector2(-8f, -1f),
-                new Vector2(-2f, -1f),
-                new Vector2(8f, -1f),
-                new Vector2(15f, -1f),
-                new Vector2(24f, -1f),
-                new Vector2(37f, -1f),
-                new Vector2(50f, -1f),
-                new Vector2(62f, -1f),
-                new Vector2(67f, -1f)
+                new Vector2(-9f, -1f),
+                new Vector2(-4f, -1f),
+                new Vector2(11f, -1f),
+                new Vector2(23f, -1f),
+                new Vector2(36.5f, -1f),
+                new Vector2(48.5f, -1f),
+                new Vector2(61f, -1f),
+                new Vector2(70f, -1f),
+                new Vector2(76f, -1f)
             },
             enemies = new EnemySpot[0],
             shooters = new[]
             {
-                new Vector2(11f, -0.25f),
-                new Vector2(40f, -0.25f)
+                new Vector2(9f, -0.25f),
+                new Vector2(46.5f, -0.25f)
             }
         });
 
@@ -324,48 +332,45 @@ public static class LevelGenerator
             next = "",
             timeLimit = 60f,
             spawn = new Vector2(-14f, -0.1f),
-            goalX = 65f,
+            goalX = 68.5f,
             platforms = new[]
             {
-                new Plat(-9f, -2f, 14f, 1f),
-                new Plat(2f, -2.5f, 5f, 1f),
-                new Plat(10f, -2f, 5f, 1f),
-                new Plat(18f, -3f, 5f, 1f),
-                new Plat(26f, -2.5f, 5f, 1f),
-                new Plat(34f, -2f, 6f, 1f),
-                new Plat(43f, -3f, 5f, 1f),
-                new Plat(52f, -2f, 5f, 1f),
-                new Plat(61f, -2f, 12f, 1f)
+                new Plat(-8f, -2f, 16f, 1f),
+                new Plat(7.5f, -2f, 7f, 1f),
+                new Plat(18.5f, -2f, 7f, 1f),
+                new Plat(30f, -2f, 7f, 1f),
+                new Plat(41.5f, -2f, 8f, 1f),
+                new Plat(53f, -2f, 7f, 1f),
+                new Plat(67.5f, -2f, 14f, 1f)
             },
             spikes = new[]
             {
                 new Vector2(-5f, -1.25f),
-                new Vector2(11f, -1.25f),
-                new Vector2(19f, -2.25f),
-                new Vector2(44f, -2.25f),
-                new Vector2(53f, -1.25f),
-                new Vector2(58f, -1.25f)
+                new Vector2(7.5f, -1.25f),
+                new Vector2(18.5f, -1.25f),
+                new Vector2(41.5f, -1.25f),
+                new Vector2(63f, -1.25f)
             },
             coins = new[]
             {
-                new Vector2(-13f, -1f),
-                new Vector2(-8f, -1f),
-                new Vector2(-3f, -1f),
-                new Vector2(2f, -1.5f),
-                new Vector2(10f, -1f),
-                new Vector2(18f, -2f),
-                new Vector2(26f, -1.5f),
-                new Vector2(34f, -1f),
-                new Vector2(43f, -2f),
-                new Vector2(61f, -1f)
+                new Vector2(-14f, -1f),
+                new Vector2(-9f, -1f),
+                new Vector2(-4f, -1f),
+                new Vector2(9f, -1f),
+                new Vector2(20f, -1f),
+                new Vector2(31f, -1f),
+                new Vector2(43.5f, -1f),
+                new Vector2(55f, -1f),
+                new Vector2(65f, -1f),
+                new Vector2(73f, -1f)
             },
             enemies = new[]
             {
-                new EnemySpot(35f, -0.5f, 32f, 36f)
+                new EnemySpot(30f, -0.5f, 27.5f, 32.5f)
             },
             shooters = new[]
             {
-                new Vector2(62f, -0.25f)
+                new Vector2(53f, -0.25f)
             }
         });
 
